@@ -195,3 +195,53 @@ pair<vector<int>, int> Dijkstra(const int num_nodes, const int source, const int
 
     return {finalPath, distance[target]};
 }
+
+// Bellman-Ford Algorithm
+pair<vector<int>, int> BellmanFord(const int num_nodes, const int source, const int target, const vector<vector<Edge>>& adjacencyList) {
+    // Initialize distance vector with "infinity"
+    vector<int> distance(num_nodes, numeric_limits<int>::max());
+    // Initialize predecessor vector to store the shortest path
+    vector<int> predecessor(num_nodes, -1);
+    distance[source] = 0;
+
+    // Relax all edges up to (num_nodes - 1) times
+    for(int i = 1; i < num_nodes; i++) {
+        bool updated = false;
+        for(int fromNode = 0; fromNode < num_nodes; fromNode++) {
+            if(distance[fromNode] == numeric_limits<int>::max()) {
+                continue; // Skip unreachable nodes
+            }
+
+            // Traverse all outgoing edges from the current node
+            for(auto& edge : adjacencyList[fromNode]) {
+                int toNode = edge.to_node, weight = edge.weight;
+
+                // Relaxation
+                if (distance[fromNode] + weight < distance[toNode]) {
+                    distance[toNode] = distance[fromNode] + weight;
+                    predecessor[toNode] = fromNode; // Record the path
+                    updated = true;
+                }
+            }
+        }
+        // Stop early if no updates in this iteration
+        if(!updated) break;
+    }
+
+    vector<int> path;
+
+    // If the target node is unreachable, return empty path and "infinity" distance
+    if(distance[target] == numeric_limits<int>::max()) {
+        return {path, distance[target]};
+    }
+
+    // Store the shortest path from target to source using predecessor vector
+    for(int at = target; at != -1; at = predecessor[at]) {
+        path.push_back(at);
+    }
+
+    // Reverse the path to get it from source to target
+    reverse(path.begin(), path.end());
+
+    return {path, distance[target]};
+}

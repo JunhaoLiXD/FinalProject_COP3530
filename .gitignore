@@ -1,0 +1,11 @@
+# Ignore macOS junk
+.DS_Store
+
+# Ignore JetBrains IDE configs
+.idea/
+
+# Ignore Qt Creator user configs
+CMakeLists.txt.user
+
+# Ignore build artifacts
+build/

@@ -1,14 +1,18 @@
-#include <iostream>
-#include <unordered_set>
+#include "../include/algorithm.h"
 #include <algorithm>
+#include <iostream>
+#include <limits>
 #include <queue>
 #include <random>
-#include <limits>
-#include "algorithm.h"
+#include <unordered_set>
 using namespace std;
 
-// Generate the graph for Dijkstra's Algorithm
-vector<vector<Edge>> generateDijkstraGraph(const int num_nodes, const int avg_degree, const int min_weight, const int max_weight) {
+// Generate a Directed graph with weighted edges
+vector<vector<Edge>> generateDirectedGraph(const int num_nodes,
+                                           const int avg_degree,
+                                           const int min_weight,
+                                           const int max_weight)
+{
     // use adjacency list to represent the graph
     vector<vector<Edge>> adjacencyList(num_nodes);
 
@@ -18,21 +22,19 @@ vector<vector<Edge>> generateDijkstraGraph(const int num_nodes, const int avg_de
     srand(time(nullptr)); // seed the random number generator
 
     // Iterate through each node to assign outgoing edges
-    for(int i = 0; i < num_nodes; i++) {
-
+    for (int i = 0; i < num_nodes; i++) {
         // number of outgoing edges for the current node
         int degree = avg_degree;
 
         // keep assigning outgoing edges for the current node...
-        while(degree > 0) {
-
-            int from_node = i; // current node
+        while (degree > 0) {
+            int from_node = i;                // current node
             int to_node = rand() % num_nodes; // randomly select a target node from all nodes
-            int weight; // weight for current edge
-            long long edge_hash; // for identify the current edge
+            int weight;                       // weight for current edge
+            long long edge_hash;              // for identify the current edge
 
             // avoid self-loops
-            if(from_node == to_node) {
+            if (from_node == to_node) {
                 continue;
             }
 
@@ -44,12 +46,11 @@ vector<vector<Edge>> generateDijkstraGraph(const int num_nodes, const int avg_de
 
             // Check whether the current edge is unique
             if (edgeSet.find(edge_hash) == edgeSet.end()) {
-
                 // push the target node and corresponding weight to the adjacent list
                 adjacencyList[from_node].push_back({to_node, weight});
                 // insert the unique edge to the set to avoid potential duplicates later
                 edgeSet.insert(edge_hash);
-                degree = degree-1; // finish assigning one outgoing edge for the current node
+                degree = degree - 1; // finish assigning one outgoing edge for the current node
             }
         }
     }
@@ -58,7 +59,8 @@ vector<vector<Edge>> generateDijkstraGraph(const int num_nodes, const int avg_de
 
 // Generates a Directed Acyclic Graph (DA Graph) with weighted edges
 // Ensures no duplicate edges and maintains acyclic property (from < to)
-vector<vector<Edge>> generateDAGraph(int num_nodes, int avg_degree, int min_weight, int max_weight) {
+vector<vector<Edge>> generateDAGraph(int num_nodes, int avg_degree, int min_weight, int max_weight)
+{
     vector<vector<Edge>> adjacencyList(num_nodes); // Representation of the graph
 
     // Random number generator
@@ -68,7 +70,7 @@ vector<vector<Edge>> generateDAGraph(int num_nodes, int avg_degree, int min_weig
     uniform_int_distribution<int> node_dist(0, num_nodes - 1);
 
     // Small Graph (Nodes <=10)
-    if(num_nodes <= 10) {
+    if (num_nodes <= 10) {
         vector<pair<int, int>> possibleEdges; // Stores all valid edges (from < to)
 
         // Generate all possible valid edges where from < to
@@ -100,12 +102,13 @@ vector<vector<Edge>> generateDAGraph(int num_nodes, int avg_degree, int min_weig
     unordered_set<long long> edgeSet; // Store unique edges
 
     // Ensure each node (except the first one) has at least one incoming edge
-    for(int i = 1; i < num_nodes; i++) {
+    for (int i = 1; i < num_nodes; i++) {
         uniform_int_distribution<int> from_dist(0, i - 1);
         int fromNode = from_dist(gen);
         int toNode = i; // Ensure toNode > fromNode
         int weight = weight_dist(gen);
-        long long edge_hash = static_cast<long long>(fromNode) * num_nodes + toNode; // Unique identifier for the edge
+        long long edge_hash = static_cast<long long>(fromNode) * num_nodes
+                              + toNode; // Unique identifier for the edge
 
         // Add the edge if it does not already exist
         if (edgeSet.find(edge_hash) == edgeSet.end()) {
@@ -116,12 +119,12 @@ vector<vector<Edge>> generateDAGraph(int num_nodes, int avg_degree, int min_weig
 
     // Add additional edges to achieve the desired average degree
     int numEdges = avg_degree * num_nodes; // Total desired edges = avg_degree * num_nodes
-    while(numEdges > 0) {
+    while (numEdges > 0) {
         int fromNode = node_dist(gen);
         int toNode = node_dist(gen);
 
         // Ensure the edge maintains the acyclic property (fromNode < toNode)
-        if(fromNode < toNode) {
+        if (fromNode < toNode) {
             long long edge_hash = static_cast<long long>(fromNode) * num_nodes + toNode;
             if (edgeSet.find(edge_hash) == edgeSet.end()) { // Avoid duplicates
                 int weight = weight_dist(gen);
@@ -134,9 +137,12 @@ vector<vector<Edge>> generateDAGraph(int num_nodes, int avg_degree, int min_weig
     return adjacencyList;
 }
 
-
 // Dijkstra's Algorithm
-pair<vector<int>, int> Dijkstra(const int num_nodes, const int source, const int target, const vector<vector<Edge>>& adjacencyList) {
+pair<vector<int>, int> Dijkstra(const int num_nodes,
+                                const int source,
+                                const int target,
+                                const vector<vector<Edge>> &adjacencyList)
+{
     // vector for updating distance
     vector<int> distance(num_nodes, numeric_limits<int>::max()); // initial distances: infinite
     // vector for updating predecessor
@@ -145,29 +151,28 @@ pair<vector<int>, int> Dijkstra(const int num_nodes, const int source, const int
     // min-heap priority queue
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
 
-
     distance[source] = 0; // source node has a distance of 0
     pq.emplace(0, source);
 
-    while(!pq.empty()) {
+    while (!pq.empty()) {
         // pull the top element from the priority queue
-        pair<int,int> top_node = pq.top();
+        pair<int, int> top_node = pq.top();
         int currentDist = top_node.first;
         int from_node = top_node.second;
         pq.pop();
 
         // if the distance found before is shorter than the current distance
-        if(currentDist > distance[from_node]) {
+        if (currentDist > distance[from_node]) {
             continue;
         }
 
         // Explore all neighbors of the current node
-        for(auto& edge : adjacencyList[from_node]) {
-            int to_node = edge.to_node;
+        for (auto &edge : adjacencyList[from_node]) {
+            int to_node = edge.toNode;
             int weight = edge.weight;
 
             // Relaxation
-            if(distance[from_node] + weight < distance[to_node]) {
+            if (distance[from_node] + weight < distance[to_node]) {
                 // update the distance
                 distance[to_node] = distance[from_node] + weight;
                 // update the predecessor
@@ -197,7 +202,11 @@ pair<vector<int>, int> Dijkstra(const int num_nodes, const int source, const int
 }
 
 // Bellman-Ford Algorithm
-pair<vector<int>, int> BellmanFord(const int num_nodes, const int source, const int target, const vector<vector<Edge>>& adjacencyList) {
+pair<vector<int>, int> BellmanFord(const int num_nodes,
+                                   const int source,
+                                   const int target,
+                                   const vector<vector<Edge>> &adjacencyList)
+{
     // Initialize distance vector with "infinity"
     vector<int> distance(num_nodes, numeric_limits<int>::max());
     // Initialize predecessor vector to store the shortest path
@@ -205,16 +214,16 @@ pair<vector<int>, int> BellmanFord(const int num_nodes, const int source, const 
     distance[source] = 0;
 
     // Relax all edges up to (num_nodes - 1) times
-    for(int i = 1; i < num_nodes; i++) {
+    for (int i = 1; i < num_nodes; i++) {
         bool updated = false;
-        for(int fromNode = 0; fromNode < num_nodes; fromNode++) {
-            if(distance[fromNode] == numeric_limits<int>::max()) {
+        for (int fromNode = 0; fromNode < num_nodes; fromNode++) {
+            if (distance[fromNode] == numeric_limits<int>::max()) {
                 continue; // Skip unreachable nodes
             }
 
             // Traverse all outgoing edges from the current node
-            for(auto& edge : adjacencyList[fromNode]) {
-                int toNode = edge.to_node, weight = edge.weight;
+            for (auto &edge : adjacencyList[fromNode]) {
+                int toNode = edge.toNode, weight = edge.weight;
 
                 // Relaxation
                 if (distance[fromNode] + weight < distance[toNode]) {
@@ -225,18 +234,19 @@ pair<vector<int>, int> BellmanFord(const int num_nodes, const int source, const 
             }
         }
         // Stop early if no updates in this iteration
-        if(!updated) break;
+        if (!updated)
+            break;
     }
 
     vector<int> path;
 
     // If the target node is unreachable, return empty path and "infinity" distance
-    if(distance[target] == numeric_limits<int>::max()) {
+    if (distance[target] == numeric_limits<int>::max()) {
         return {path, distance[target]};
     }
 
     // Store the shortest path from target to source using predecessor vector
-    for(int at = target; at != -1; at = predecessor[at]) {
+    for (int at = target; at != -1; at = predecessor[at]) {
         path.push_back(at);
     }
 

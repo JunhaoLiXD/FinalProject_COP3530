@@ -11,7 +11,7 @@ struct Edge {
     /**
      * @brief The index of the destination node.
      */
-    int to_node;
+    int toNode;
 
     /**
      * @brief The weight of the edge.
@@ -21,14 +21,14 @@ struct Edge {
 
 
 /**
- * @brief Generate the graph for Dijkstra's Algorithm.
+ * @brief Generate a Directed graph with weighted edges.
  * @param num_nodes The total number of nodes in the graph.
  * @param avg_degree The average number of outgoing edges per node.
  * @param min_weight The minimum weight for any edge.
  * @param max_weight The maximum weight for any edge.
  * @return adjacency list.
  */
-vector<vector<Edge>> generateDijkstraGraph(int num_nodes, int avg_degree, int min_weight, int max_weight);
+vector<vector<Edge>> generateDirectedGraph(int num_nodes, int avg_degree, int min_weight, int max_weight);
 
 /**
  * @brief Generates a Directed Acyclic Graph (DA Graph) with weighted edges.

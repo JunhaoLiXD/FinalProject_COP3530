@@ -22,7 +22,7 @@ int main() {
     cout << "|-----------|---------------------|-----------------------|\n";
     for (int num_nodes : nodeCounts) {
         // Generate a random directed graph
-        vector<vector<Edge>> graph_DG = generateDirectedGraph(num_nodes, 10, 1, 10);
+        vector<vector<Edge>> graph_DG = generateDirectedGraph(num_nodes, 20, 1, 10);
         int source = 0;
         int target = num_nodes - 1;
 
@@ -52,7 +52,7 @@ int main() {
     cout << "|-----------|-----------------------|\n";
     for(int num_nodes : nodeCounts) {
         // Generate a DAG
-        vector<vector<Edge>> graph_DAG = generateDAGraph(num_nodes, 10, -10, 10);
+        vector<vector<Edge>> graph_DAG = generateDAGraph(num_nodes, 20, -10, 10);
         int source = 1, target = num_nodes - 1;
 
         // Time Bellman-Ford algorithm on the DAG

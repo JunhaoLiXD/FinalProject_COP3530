@@ -161,6 +161,11 @@ pair<vector<int>, int> Dijkstra(const int num_nodes,
         int from_node = top_node.second;
         pq.pop();
 
+        // early termination if the target node is reached
+        if (from_node == target){
+            break;
+        }
+
         // if the distance found before is shorter than the current distance
         if (currentDist > distance[from_node]) {
             continue;
